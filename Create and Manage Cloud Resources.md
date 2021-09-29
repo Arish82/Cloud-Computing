@@ -124,15 +124,15 @@
   
 ###  Sending traffic to your instances
   <ul>
-    ##### Enter the following command to view the external IP address of the www-rule forwarding rule used by the load balancer
+##### Enter the following command to view the external IP address of the www-rule forwarding rule used by the load balancer
     <li>gcloud compute forwarding-rules describe www-rule --region us-central1</li>
-    ##### Use curl command to access the external IP address, replacing IP_ADDRESS with an external IP address from the previous command
+##### Use curl command to access the external IP address, replacing IP_ADDRESS with an external IP address from the previous command
     <li>while true; do curl -m1 IP_ADDRESS; done</li>
   </ul>
   
 ##  Create an HTTP load balancer
   <ul>
-####  First, create the load balancer template:
+    <h3> First, create the load balancer template:</h3>
     <ul>
       gcloud compute instance-templates create lb-backend-template \<br>
    --region=us-central1 \<br>
@@ -145,79 +145,60 @@
      apt-get update<br>
      apt-get install apache2 -y<br>
      a2ensite default-ssl<br>
-     a2enmod ssl<br><br>
+     a2enmod ssl<br>
      vm_hostname="$(curl -H "Metadata-Flavor:Google" \<br>
      http://169.254.169.254/computeMetadata/v1/instance/name)"
      echo "Page served from: $vm_hostname" | \
      tee /var/www/html/index.html
      systemctl restart apache2'
     </ul>
+    
 ####  Create a managed instance group based on the template:
-    <ul>
-      gcloud compute instance-groups managed create lb-backend-group \<br>
+      gcloud compute instance-groups managed create lb-backend-group \
       --template=lb-backend-template --size=2 --zone=us-central1-a
-    </ul>
     
 #####  Create the fw-allow-health-check firewall rule. This is an ingress rule that allows traffic from the Google Cloud health checking systems (130.211.0.0/22 and 35.191.0.0/16). This lab uses the target tag allow-health-check to identify the VMs.
-    <ul>
-      gcloud compute firewall-rules create fw-allow-health-check \<br>
-    --network=default \<br>
-    --action=allow \<br>
-    --direction=ingress \<br>
-    --source-ranges=130.211.0.0/22,35.191.0.0/16 \<br>
-    --target-tags=allow-health-check \<br>
+      gcloud compute firewall-rules create fw-allow-health-check \
+    --network=default \
+    --action=allow \
+    --direction=ingress \
+    --source-ranges=130.211.0.0/22,35.191.0.0/16 \
+    --target-tags=allow-health-check \
     --rules=tcp:80
-    </ul>
 ####  Now that the instances are up and running, set up a global static external IP address that your customers use to reach your load balancer.
-    <ul>
-      gcloud compute addresses create lb-ipv4-1 \<br>
-    --ip-version=IPV4 \<br>
+      gcloud compute addresses create lb-ipv4-1 \
+    --ip-version=IPV4 \
     --global
-    </ul>
 ####  Note the IPv4 address that was reserved:
-    <ul>
-      gcloud compute addresses describe lb-ipv4-1 \<br>
-    --format="get(address)" \<br>
+      gcloud compute addresses describe lb-ipv4-1 \
+    --format="get(address)" \
     --global
-    </ul>
 ####  Create a healthcheck for the load balancer:
-    <ul>
-          gcloud compute health-checks create http http-basic-check \<br>
+          gcloud compute health-checks create http http-basic-check \
         --port 80
-    </ul>
 ####  Create a backend service:
-    <ul>
-          gcloud compute backend-services create web-backend-service \<br>
-        --protocol=HTTP \<br>
-        --port-name=http \<br>
-        --health-checks=http-basic-check \<br>
+          gcloud compute backend-services create web-backend-service \
+        --protocol=HTTP \
+        --port-name=http \
+        --health-checks=http-basic-check \
         --global
-    </ul>
 ####  Add your instance group as the backend to the backend service:
-    <ul>
-          gcloud compute backend-services add-backend web-backend-service \<br>
-        --instance-group=lb-backend-group \<br>
-        --instance-group-zone=us-central1-a \<br>
+          gcloud compute backend-services add-backend web-backend-service \
+        --instance-group=lb-backend-group \
+        --instance-group-zone=us-central1-a \
         --global
-    </ul>
 ####  Create a URL map to route the incoming requests to the default backend service:
-    <ul>
-          gcloud compute url-maps create web-map-http \<br>
+          gcloud compute url-maps create web-map-http \
         --default-service web-backend-service
-    </ul>
 ####  Create a target HTTP proxy to route requests to your URL map:
-    <ul>
-          gcloud compute target-http-proxies create http-lb-proxy \<br>
+          gcloud compute target-http-proxies create http-lb-proxy \
         --url-map web-map-http
-    </ul>
 ####  Create a global forwarding rule to route incoming requests to the proxy:
-    <ul>
-          gcloud compute forwarding-rules create http-content-rule \<br>
-        --address=lb-ipv4-1\<br>
-        --global \<br>
-        --target-http-proxy=http-lb-proxy \<br>
+          gcloud compute forwarding-rules create http-content-rule \
+        --address=lb-ipv4-1\
+        --global \
+        --target-http-proxy=http-lb-proxy \
         --ports=80
-    </ul>
   </ul>
   
   
