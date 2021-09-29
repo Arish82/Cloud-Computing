@@ -66,7 +66,7 @@
     <li>kubectl get service</li>
   </ul>
   
-  ### To delete the cluster
+### To delete the cluster
   <ul>
     To delete the cluster
     <li>gcloud container clusters delete [CLUSTER-NAME]</li>
@@ -124,10 +124,10 @@
   
 ###  Sending traffic to your instances
   <ul>
-##### Enter the following command to view the external IP address of the www-rule forwarding rule used by the load balancer
-    <li>gcloud compute forwarding-rules describe www-rule --region us-central1</li>
-##### Use curl command to access the external IP address, replacing IP_ADDRESS with an external IP address from the previous command
-    <li>while true; do curl -m1 IP_ADDRESS; done</li>
+<h4>Enter the following command to view the external IP address of the www-rule forwarding rule used by the load balancer</h4>
+    <ul>gcloud compute forwarding-rules describe www-rule --region us-central1</ul>
+<h4>Use curl command to access the external IP address, replacing IP_ADDRESS with an external IP address from the previous command</h4>
+    <ul>while true; do curl -m1 IP_ADDRESS; done</ul>
   </ul>
   
 ##  Create an HTTP load balancer
