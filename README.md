@@ -86,21 +86,49 @@ This message shows that your installation appears to be working correctly.<br>
   <b>to start the container in the background</b>
   <p>docker run -p 4000:80 --name my-app -d node-app:0.1</p>
   
-  <b><
+  <b>Look at the logs by executing</b>
+  <p>docker logs [Container ID]</p>
   
+  <b>If you want to follow the log's output as the container is running, use the -f option</b>
+  <p>docker logs -f [Contianer_id]</p>
   </ul>
   
+# Debug
+  <ul>
+  <b>Start an interactive Bash session inside the running container.</b>
+  <p>docker exec -it [Container id] id</p>
+  <i>The -it flags let you interact with a container by allocating a pseudo-tty and keeping stdin open. Notice bash ran in the WORKDIR directory (/app) specified in the Dockerfile. From here, you have an interactive shell session inside the container to debug.</i>
+  <b>You can examine a container's metadata in Docker by using Docker inspect</b>
+  <p>docker inspect [container_id]</p>
+  <b>Use --format to inspect specific fields from the returned JSON</b>
+  <p>docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAdress}}{{end}}' [container_id]</p>
+  </ul>
+  
+# Publish
   <ul>
   <b> </b>
   <p></p>
   </ul>
   
   <ul>
+  <i>Now you're going to push your image to the Google Container Registry (gcr). After that you'll remove all containers and images to simulate a fresh environment, and then pull and run your containers. This will demonstrate the portability of Docker containers.<br>
+  To push images to your private registry hosted by gcr, you need to tag the images with a registry name. The format is [hostname]/[project-id]/[image]:[tag].<br>
+<br>
+For gcr:<br>
+<br>
+[hostname]= gcr.io<br>
+[project-id]= your project's ID<br>
+[image]= your image name<br>
+[tag]= any string tag of your choice. If unspecified, it defaults to "latest".</i><br>
+  <b>Find your project ID</b>
+  <p>gcloud config list project</p>
+  <b>docker tag node-app:0.2 gcr.io/[project-id]/node-app:0.2</b>
+  <p></p>
+  <b>docker push gcr.io/[project-id]/node-app:0.2</b>
+  <p></p>
   <b> </b>
   <p></p>
-  </ul>
+  <b> </b>
+  <p></p>
   
-  <ul>
-  <b> </b>
-  <p></p>
   </ul>
